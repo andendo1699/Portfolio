@@ -42,8 +42,26 @@
 </head>
 
 <body>
+  <div class="page-loader">
+    <div class="loader-content">
+      <div class="loader-logo">AD</div>
+      <div class="loader-bar">
+        <div class="loader-progress"></div>
+      </div>
+    </div>
+  </div>
+  <canvas id="particles-canvas" aria-hidden="true"></canvas>
+  <div class="custom-cursor" aria-hidden="true"></div>
+  <div class="cursor-trail" aria-hidden="true"></div>
   <div class="noise" aria-hidden="true"></div>
   <div class="mouse-bg" aria-hidden="true"></div>
+  <div class="floating-shapes" aria-hidden="true">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
+  </div>
   <div id="scroll-container">
     <header class="hero" id="top">
       <nav class="nav">
@@ -63,7 +81,7 @@
         <div class="hero-text">
           <p class="eyebrow">JavaScript / Shopify Developer</p>
           <h1>
-            Hello, I'm <span>Anden Do</span> — a builder of rich,
+            Hello, I'm <span class="glitch-text" data-text="Anden Do">Anden Do</span> — a builder of rich,
             high-performance eCommerce web experiences.
           </h1>
           <p class="lead">
@@ -78,17 +96,17 @@
               (CV)</a>
           </div>
           <div class="hero-highlights">
-            <div class="highlight">
-              <h3>6+ years</h3>
-              <p>Shopify / JavaScript Developer</p>
+            <div class="highlight magnetic-card">
+              <h3 class="counter" data-target="6">0</h3><span class="plus">+</span>
+              <p>Years Experience</p>
             </div>
-            <div class="highlight">
-              <h3>2+ years</h3>
-              <p>Shopify freelancer</p>
+            <div class="highlight magnetic-card">
+              <h3 class="counter" data-target="2">0</h3><span class="plus">+</span>
+              <p>Years Freelancing</p>
             </div>
-            <div class="highlight">
-              <h3>20+</h3>
-              <p>Projects</p>
+            <div class="highlight magnetic-card">
+              <h3 class="counter" data-target="20">0</h3><span class="plus">+</span>
+              <p>Projects Completed</p>
             </div>
           </div>
         </div>
