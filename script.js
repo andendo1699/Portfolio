@@ -3,10 +3,15 @@ const mouseBg = document.querySelector('.mouse-bg');
 const customCursor = document.querySelector('.custom-cursor');
 const cursorTrail = document.querySelector('.cursor-trail');
 const root = document.documentElement;
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouchDevice = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+const isMobileViewport = window.matchMedia('(max-width: 900px)').matches;
 let cursorX = window.innerWidth / 2;
 let cursorY = window.innerHeight / 2;
 let trailX = cursorX;
 let trailY = cursorY;
+let pageVisible = true;
+let mouseFrame = null;
 
 const updateCursorVars = () => {
   root.style.setProperty('--cursor-x', `${cursorX}px`);
@@ -21,6 +26,7 @@ const updateParallax = () => {
 };
 
 const renderMouseEffects = () => {
+  mouseFrame = null;
   updateCursorVars();
   updateParallax();
   if (mouseBg) {
@@ -30,6 +36,7 @@ const renderMouseEffects = () => {
 
 // Custom Cursor
 const updateCustomCursor = () => {
+  if (prefersReducedMotion || isTouchDevice) return;
   if (customCursor) {
     customCursor.style.left = `${cursorX}px`;
     customCursor.style.top = `${cursorY}px`;
@@ -47,17 +54,21 @@ const updateCustomCursor = () => {
   requestAnimationFrame(updateCustomCursor);
 };
 
-updateCustomCursor();
+if (!prefersReducedMotion && !isTouchDevice) {
+  updateCustomCursor();
+}
 
 document.addEventListener('mousemove', (e) => {
   cursorX = e.clientX;
   cursorY = e.clientY;
-  window.requestAnimationFrame(renderMouseEffects);
+  if (mouseFrame) return;
+  mouseFrame = window.requestAnimationFrame(renderMouseEffects);
 });
 
 // Cursor expand on hover
 const expandCursorElements = document.querySelectorAll('a, button, .btn, .magnetic-card');
 expandCursorElements.forEach(el => {
+  if (prefersReducedMotion || isTouchDevice) return;
   el.addEventListener('mouseenter', () => {
     if (customCursor) customCursor.classList.add('expand');
   });
@@ -143,7 +154,10 @@ if (canvas) {
   canvas.height = window.innerHeight;
 
   const particles = [];
-  const particleCount = 50;
+  const particleCount = prefersReducedMotion ? 0 : (isMobileViewport ? 18 : 36);
+  const connectionDistance = isMobileViewport ? 100 : 130;
+  const connectionDistanceSq = connectionDistance * connectionDistance;
+  let particleAnimationId = null;
 
   class Particle {
     constructor() {
@@ -178,6 +192,7 @@ if (canvas) {
   }
 
   function animateParticles() {
+    if (!pageVisible) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     for (let i = 0; i < particles.length; i++) {
@@ -188,10 +203,11 @@ if (canvas) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;
         const dy = particles[i].y - particles[j].y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+        const distanceSq = dx * dx + dy * dy;
         
-        if (distance < 150) {
-          ctx.strokeStyle = `rgba(63, 140, 60, ${0.2 * (1 - distance / 150)})`;
+        if (distanceSq < connectionDistanceSq) {
+          const distanceFactor = 1 - distanceSq / connectionDistanceSq;
+          ctx.strokeStyle = `rgba(63, 140, 60, ${0.2 * distanceFactor})`;
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
@@ -201,32 +217,60 @@ if (canvas) {
       }
     }
     
-    requestAnimationFrame(animateParticles);
+    particleAnimationId = requestAnimationFrame(animateParticles);
   }
 
-  animateParticles();
+  if (particles.length > 0) {
+    animateParticles();
+  }
 
   window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    pageVisible = !document.hidden;
+    if (pageVisible && particles.length > 0 && !particleAnimationId) {
+      animateParticles();
+    }
+    if (!pageVisible && particleAnimationId) {
+      cancelAnimationFrame(particleAnimationId);
+      particleAnimationId = null;
+    }
   });
 }
 
 // Magnetic Effect for Cards and Buttons
 const magneticElements = document.querySelectorAll('.magnetic-card, .btn');
 magneticElements.forEach(element => {
-  element.addEventListener('mousemove', (e) => {
+  if (prefersReducedMotion || isTouchDevice) return;
+  let magneticFrame = null;
+  let pointerX = 0;
+  let pointerY = 0;
+
+  const applyMagneticTransform = () => {
+    magneticFrame = null;
     const rect = element.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    
-    const moveX = x * 0.15;
-    const moveY = y * 0.15;
-    
-    element.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.02)`;
+    const x = pointerX - rect.left - rect.width / 2;
+    const y = pointerY - rect.top - rect.height / 2;
+    const moveX = x * 0.12;
+    const moveY = y * 0.12;
+    element.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.01)`;
+  };
+
+  element.addEventListener('mousemove', (e) => {
+    pointerX = e.clientX;
+    pointerY = e.clientY;
+    if (magneticFrame) return;
+    magneticFrame = requestAnimationFrame(applyMagneticTransform);
   });
   
   element.addEventListener('mouseleave', () => {
+    if (magneticFrame) {
+      cancelAnimationFrame(magneticFrame);
+      magneticFrame = null;
+    }
     element.style.transform = 'translate(0, 0) scale(1)';
   });
 });
@@ -234,24 +278,41 @@ magneticElements.forEach(element => {
 // 3D Tilt Effect on Cards
 const tiltCards = document.querySelectorAll('.project-card, .about-card, .skill-card');
 tiltCards.forEach(card => {
-  card.addEventListener('mousemove', (e) => {
+  if (prefersReducedMotion || isTouchDevice) return;
+  let tiltFrame = null;
+  let pointerX = 0;
+  let pointerY = 0;
+
+  const applyTilt = () => {
+    tiltFrame = null;
     const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = pointerX - rect.left;
+    const y = pointerY - rect.top;
     
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     
-    const rotateX = (y - centerY) / 10;
-    const rotateY = (centerX - x) / 10;
+    const rotateX = (y - centerY) / 12;
+    const rotateY = (centerX - x) / 12;
     
     card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
     card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
     
-    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px) scale(1.01)`;
+    card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.005)`;
+  };
+
+  card.addEventListener('mousemove', (e) => {
+    pointerX = e.clientX;
+    pointerY = e.clientY;
+    if (tiltFrame) return;
+    tiltFrame = requestAnimationFrame(applyTilt);
   });
   
   card.addEventListener('mouseleave', () => {
+    if (tiltFrame) {
+      cancelAnimationFrame(tiltFrame);
+      tiltFrame = null;
+    }
     card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale(1)';
   });
 });
