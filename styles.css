@@ -454,18 +454,8 @@ body.is-loaded .hero-text h1 {
   animation: heroBurst 1s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
 }
 
-body.is-loaded .hero-text h1 .word {
-  animation: wordBurst 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: calc(var(--i) * 0.06s + 0.18s);
-}
-
 body.is-loaded .hero-text .lead {
   animation: heroBurst 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
-}
-
-body.is-loaded .hero-text .lead .word {
-  animation: wordBurst 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: calc(var(--i) * 0.04s + 0.45s);
 }
 
 body.is-loaded .hero-actions .btn {
@@ -522,15 +512,6 @@ body.is-loaded .hero-card::after {
 .hero-text h1,
 .hero-text .lead {
   animation: floatIn 1s ease both;
-}
-
-.hero-text h1 .word,
-.hero-text .lead .word {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(26px) rotateX(14deg) scale(0.96);
-  filter: blur(8px);
-  transform-origin: 50% 100%;
 }
 
 .hero-text h1 span {
@@ -1203,24 +1184,6 @@ body.dark .float-social__label {
   }
 }
 
-@keyframes wordBurst {
-  0% {
-    opacity: 0;
-    transform: translateY(26px) rotateX(16deg) scale(0.95);
-    filter: blur(8px);
-  }
-  70% {
-    opacity: 1;
-    transform: translateY(-3px) rotateX(0deg) scale(1.02);
-    filter: blur(0);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
 @keyframes navIn {
   0% {
     opacity: 0;
@@ -1403,9 +1366,7 @@ body.dark #particles-canvas {
   body.is-loaded .nav-links a,
   body.is-loaded .hero-text .eyebrow,
   body.is-loaded .hero-text h1,
-  body.is-loaded .hero-text h1 .word,
   body.is-loaded .hero-text .lead,
-  body.is-loaded .hero-text .lead .word,
   body.is-loaded .hero-actions .btn,
   body.is-loaded .hero-highlights .highlight,
   body.is-loaded .hero-card {

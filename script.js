@@ -95,50 +95,6 @@ const setStagger = (elements) => {
   });
 };
 
-const wrapWords = (element, startIndex = 0) => {
-  let index = startIndex;
-  const nodes = Array.from(element.childNodes);
-  nodes.forEach((node) => {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const text = node.textContent || '';
-      const parts = text.split(/(\s+)/);
-      const fragment = document.createDocumentFragment();
-
-      parts.forEach((part) => {
-        if (!part) return;
-        if (/\s+/.test(part)) {
-          fragment.appendChild(document.createTextNode(part));
-        } else {
-          const span = document.createElement('span');
-          span.className = 'word';
-          span.style.setProperty('--i', index);
-          span.textContent = part;
-          fragment.appendChild(span);
-          index += 1;
-        }
-      });
-
-      node.replaceWith(fragment);
-    } else if (node.nodeType === Node.ELEMENT_NODE) {
-      const el = node;
-      el.classList.add('word');
-      el.style.setProperty('--i', index);
-      index += 1;
-    }
-  });
-
-  return index;
-};
-
-const heroTitle = document.querySelector('.hero-text h1');
-const heroLead = document.querySelector('.hero-text .lead');
-if (heroTitle && !heroTitle.querySelector('.word')) {
-  let wordIndex = wrapWords(heroTitle, 0);
-  if (heroLead && !heroLead.querySelector('.word')) {
-    wrapWords(heroLead, wordIndex);
-  }
-}
-
 setStagger(document.querySelectorAll('.nav-links a'));
 
 toggleButton.addEventListener('click', () => {
