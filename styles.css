@@ -675,7 +675,7 @@ body.is-loaded .hero-card::after {
 /* Glitch Text Effect */
 .glitch-text {
   position: relative;
-  display: inline-block;
+  display: inline;
   color: var(--accent);
   line-height: 1.3;
   animation: glitch-skew 5s infinite;
