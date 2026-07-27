@@ -677,6 +677,7 @@ body.is-loaded .hero-card::after {
   position: relative;
   display: inline-block;
   color: var(--accent);
+  line-height: 1.3;
   animation: glitch-skew 5s infinite;
 }
 
