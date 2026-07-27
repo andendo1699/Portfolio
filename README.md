@@ -2,7 +2,7 @@
 
 Personal portfolio of **Anden Do**, a Shopify & JavaScript developer with 6+ years of hands-on experience building scalable eCommerce systems and web applications.
 
-🌐 **Live:** https://andendo.website
+🌐 **Live:** https://andendo.com
 
 ---
 
@@ -41,6 +41,6 @@ I value simplicity, stability, and long-term scalability over quick hacks.
 
 ## 📬 Contact
 
-- 🌐 Website: https://andendo.website
+- 🌐 Website: https://andendo.com
 - 📘 Facebook: https://fb.com/andendo1699
 - 💬 Zalo / WhatsApp: +84 327 238 659
